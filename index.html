@@ -134,7 +134,7 @@
         function getNextMonthName() {
             const date = new Date();
             date.setDate(1); // Resetear a día 1 para evitar problemas con meses cortos
-            date.setMonth(date.getMonth() + 1); // Avanzar un mes
+            date.setMonth(date.getMonth()); // Avanzar un mes
             
             const options = { month: 'long', year: 'numeric' };
             // Capitalizar la primera letra del mes (ej: 'diciembre' -> 'Diciembre')
