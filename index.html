@@ -2,472 +2,327 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Libros iOS 18</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Mensual</title>
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#F2F2F7">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3389/3389081.png">
-
+    <!-- Configuración del Icono de la Aplicación (PWA/iOS) -->
+    <!-- Se asume que 'check.png' está en la misma ubicación que index.html -->
+    <link rel="apple-touch-icon" href="check.png">
+    <link rel="icon" type="image/png" href="check.png">
+    
+    <!-- Carga Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuración de Fuentes -->
     <style>
-        :root {
-            --bg-color: #F2F2F7;
-            --card-bg: #FFFFFF;
-            --primary: #007AFF;
-            --text-main: #000000;
-            --text-sec: #8E8E93;
-            --danger: #FF3B30;
-            --success: #34C759;
-            --radius: 20px;
-            --shadow: 0 4px 20px rgba(0,0,0,0.05);
-            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
-            font-family: var(--font-stack);
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 90px; /* Espacio para el navbar */
-            color: var(--text-main);
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #f2f2f7; /* Color de fondo claro de iOS */
         }
-
-        h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -0.5px; }
-        h1 { font-size: 34px; padding: 20px 20px 10px 20px; }
-
-        /* Componentes UI */
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin: 15px 20px;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s;
+        .ios-card {
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
         }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 50px; /* Pill shape */
-            font-size: 16px;
-            font-weight: 600;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 10px;
+        .ios-title {
+            font-weight: 700;
+            font-size: 2.5rem; /* Título grande */
+            color: #000;
         }
-
-        .btn.secondary { background: #E5E5EA; color: var(--primary); }
-        .btn.success { background: var(--success); }
-        .btn.small { width: auto; padding: 8px 16px; font-size: 14px; }
-
-        input, select {
-            width: 100%;
-            padding: 16px;
-            background: #F2F2F7;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            margin-bottom: 12px;
-            font-family: var(--font-stack);
+        .ios-button {
+            transition: all 0.1s ease;
+            box-shadow: 0 2px 4px rgba(0, 122, 255, 0.2);
         }
-
-        /* Navegación Inferior (TabBar) */
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 0.5px solid rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0 25px 0; /* Extra padding para iPhone Home Indicator */
-            z-index: 100;
+        .ios-button:active {
+            transform: scale(0.98);
+            box-shadow: none;
         }
-
-        .tab-item {
-            text-align: center;
-            font-size: 10px;
-            color: var(--text-sec);
-            cursor: pointer;
-            width: 20%;
+        .ios-item {
+            /* Estilo para simular la separación sutil de las celdas de la lista */
+            border-bottom: 1px solid #e5e5ea;
         }
-
-        .tab-item.active { color: var(--primary); }
-        .tab-icon { font-size: 24px; display: block; margin-bottom: 4px; }
-
-        /* Vistas (Tabs) */
-        .view { display: none; animation: fadeIn 0.3s ease; }
-        .view.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Estilos específicos */
-        .progress-bar-container {
-            background: #E5E5EA;
-            height: 12px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
+        .ios-item:last-child {
+            border-bottom: none;
         }
-        .progress-bar {
-            background: var(--primary);
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease;
+        .checkbox:checked + .task-text {
+            text-decoration: line-through;
+            color: #a0a0a0;
         }
-        
-        .stat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .stat-box {
-            background: #E5E5EA;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-        }
-        .stat-number { font-size: 24px; font-weight: 800; color: var(--primary); }
-        .stat-label { font-size: 12px; color: var(--text-sec); text-transform: uppercase; }
-
-        .star-rating { display: flex; justify-content: center; gap: 5px; margin-bottom: 15px; }
-        .star { font-size: 30px; color: #D1D1D6; cursor: pointer; }
-        .star.selected { color: #FFD60A; }
-
     </style>
 </head>
-<body>
+<body class="min-h-screen p-4 md:p-8">
 
-    <div id="view-add" class="view active">
-        <h1>Registrar Libro</h1>
-        <div class="card">
-            <input type="text" id="add-title" placeholder="Título del libro">
-            <input type="text" id="add-author" placeholder="Autor">
-            
-            <label style="font-size: 14px; color: var(--text-sec); margin-left: 5px;">Estado inicial</label>
-            <select id="add-status" onchange="toggleDateInputs()">
-                <option value="reading">Leyendo ahora</option>
-                <option value="want">Quiero leer</option>
-                <option value="read">Leído</option>
-            </select>
+    <div class="max-w-xl mx-auto">
+        <!-- Título principal con el mes siguiente -->
+        <header class="mb-6">
+            <p class="text-sm text-gray-500 font-medium mb-1">Checklist para:</p>
+            <h1 id="month-title" class="ios-title">Cargando Mes...</h1>
+        </header>
 
-            <div id="date-container">
-                <label style="font-size: 12px; color: var(--text-sec);">Fecha inicio</label>
-                <input type="date" id="add-start">
-                <div id="end-date-wrapper" style="display:none;">
-                    <label style="font-size: 12px; color: var(--text-sec);">Fecha término</label>
-                    <input type="date" id="add-end">
-                    <div class="star-rating" id="add-rating-container">
-                        <span class="star" onclick="setRating(1)">★</span>
-                        <span class="star" onclick="setRating(2)">★</span>
-                        <span class="star" onclick="setRating(3)">★</span>
-                        <span class="star" onclick="setRating(4)">★</span>
-                        <span class="star" onclick="setRating(5)">★</span>
-                    </div>
+        <!-- Botón de Limpiar Checks -->
+        <div class="mb-6">
+            <button id="clear-checks-btn" onclick="clearAllChecks()"
+                class="w-full py-3 bg-red-500 text-white rounded-xl font-semibold ios-button hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300">
+                Limpiar Todos los Checks
+            </button>
+        </div>
+
+        <!-- Lista: Pagos a inicios de mes -->
+        <section class="mb-8 p-4 ios-card rounded-xl">
+            <h2 class="text-xl font-bold mb-3 text-gray-800">Pagos a Inicios de Mes</h2>
+            <div id="early-month-tasks" class="divide-y divide-gray-100">
+                <!-- Tareas se renderizarán aquí -->
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <button onclick="showAddTaskModal('early')"
+                    class="w-full py-2 text-blue-600 font-medium rounded-lg hover:bg-blue-50 focus:outline-none">
+                    + Añadir Nueva Tarea
+                </button>
+            </div>
+        </section>
+
+        <!-- Lista: Pagos a mitad de mes -->
+        <section class="p-4 ios-card rounded-xl">
+            <h2 class="text-xl font-bold mb-3 text-gray-800">Pagos a Mitad de Mes</h2>
+            <div id="mid-month-tasks" class="divide-y divide-gray-100">
+                <!-- Tareas se renderizarán aquí -->
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <button onclick="showAddTaskModal('mid')"
+                    class="w-full py-2 text-blue-600 font-medium rounded-lg hover:bg-blue-50 focus:outline-none">
+                    + Añadir Nueva Tarea
+                </button>
+            </div>
+        </section>
+
+        <!-- Modal para añadir tarea -->
+        <div id="add-task-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-6 rounded-xl w-full max-w-sm shadow-2xl">
+                <h3 class="text-lg font-bold mb-4">Añadir Tarea</h3>
+                <input type="text" id="new-task-input" placeholder="Descripción de la tarea"
+                    class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-blue-500 focus:border-blue-500">
+                <div class="flex justify-end space-x-3">
+                    <button onclick="document.getElementById('add-task-modal').classList.add('hidden')"
+                        class="px-4 py-2 text-gray-600 rounded-lg hover:bg-gray-100">
+                        Cancelar
+                    </button>
+                    <button id="save-task-btn" onclick="saveNewTask()"
+                        class="px-4 py-2 bg-blue-500 text-white rounded-lg ios-button hover:bg-blue-600">
+                        Guardar
+                    </button>
                 </div>
             </div>
-
-            <button class="btn" onclick="addBook()">Guardar Libro</button>
         </div>
+        
+        <!-- Estado de almacenamiento local para información -->
+        <p class="text-xs text-center text-gray-400 mt-6">Usando Almacenamiento Local (LocalStorage) del navegador.</p>
     </div>
 
-    <div id="view-reading" class="view">
-        <h1>Leyendo</h1>
-        <div id="reading-list"></div>
-    </div>
+    <!-- Script de la aplicación -->
+    <script type="module">
 
-    <div id="view-want" class="view">
-        <h1>Por Leer</h1>
-        <div id="want-list"></div>
-    </div>
+        // Clave de almacenamiento local
+        const LOCAL_STORAGE_KEY = 'monthlyChecklistTasks';
+        
+        // Variables globales de la app
+        window.tasks = [];
+        window.currentCategory = null; // Para saber qué lista añadir
 
-    <div id="view-stats" class="view">
-        <h1>Estadísticas</h1>
-        <div id="stats-content"></div>
-    </div>
-
-    <div id="view-challenge" class="view">
-        <h1>Desafío 2025</h1>
-        <div class="card" style="text-align: center;">
-            <h2 id="challenge-percent">0%</h2>
-            <p style="color:var(--text-sec); margin-bottom: 20px;">Completado</p>
+        // --- FUNCIONES DE UTILIDAD DE FECHA ---
+        function getNextMonthName() {
+            const date = new Date();
+            date.setDate(1); // Resetear a día 1 para evitar problemas con meses cortos
+            date.setMonth(date.getMonth() + 1); // Avanzar un mes
             
-            <div class="progress-bar-container" style="height: 20px;">
-                <div id="challenge-bar" class="progress-bar"></div>
-            </div>
-            
-            <div class="stat-grid" style="margin-top: 20px;">
-                <div class="stat-box">
-                    <div class="stat-number" id="challenge-read">0</div>
-                    <div class="stat-label">Leídos</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-number" id="challenge-target">0</div>
-                    <div class="stat-label">Meta</div>
-                </div>
-            </div>
-
-            <button class="btn secondary" style="margin-top: 20px;" onclick="setChallengeGoal()">Definir Meta Anual</button>
-        </div>
-    </div>
-
-    <div class="tab-bar">
-        <div class="tab-item active" onclick="switchTab('view-add', this)">
-            <span class="tab-icon">✚</span>Registrar
-        </div>
-        <div class="tab-item" onclick="switchTab('view-reading', this)">
-            <span class="tab-icon">📖</span>Leyendo
-        </div>
-        <div class="tab-item" onclick="switchTab('view-want', this)">
-            <span class="tab-icon">🔖</span>Lista
-        </div>
-        <div class="tab-item" onclick="switchTab('view-stats', this)">
-            <span class="tab-icon">📊</span>Stats
-        </div>
-        <div class="tab-item" onclick="switchTab('view-challenge', this)">
-            <span class="tab-icon">🏆</span>Desafío
-        </div>
-    </div>
-
-    <script>
-        // --- ESTADO Y ALMACENAMIENTO ---
-        let books = JSON.parse(localStorage.getItem('myBooks')) || [];
-        let challengeGoal = parseInt(localStorage.getItem('readingChallenge')) || 12;
-        let tempRating = 0;
-
-        // --- FUNCIONES DE INTERFAZ ---
-        function switchTab(viewId, tabElement) {
-            // Ocultar vistas
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            
-            // Actualizar tabs
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            tabElement.classList.add('active');
-
-            // Recargar datos de la vista
-            if(viewId === 'view-reading') renderReading();
-            if(viewId === 'view-want') renderWant();
-            if(viewId === 'view-stats') renderStats();
-            if(viewId === 'view-challenge') renderChallenge();
+            const options = { month: 'long', year: 'numeric' };
+            // Capitalizar la primera letra del mes (ej: 'diciembre' -> 'Diciembre')
+            const monthName = date.toLocaleDateString('es-ES', options);
+            return monthName.charAt(0).toUpperCase() + monthName.slice(1);
         }
 
-        function toggleDateInputs() {
-            const status = document.getElementById('add-status').value;
-            const dateContainer = document.getElementById('date-container');
-            const endWrapper = document.getElementById('end-date-wrapper');
+        // Mostrar el mes siguiente al cargar
+        document.getElementById('month-title').textContent = getNextMonthName();
 
-            if (status === 'want') {
-                dateContainer.style.display = 'none';
-            } else {
-                dateContainer.style.display = 'block';
-                if (status === 'read') {
-                    endWrapper.style.display = 'block';
+        // --- FUNCIONES DE ALMACENAMIENTO LOCAL ---
+
+        /**
+         * Carga las tareas desde localStorage.
+         */
+        function loadTasksFromLocalStorage() {
+            try {
+                const storedTasks = localStorage.getItem(LOCAL_STORAGE_KEY);
+                // Si no hay tareas, inicializa con un array vacío
+                window.tasks = storedTasks ? JSON.parse(storedTasks) : [];
+                renderTasks();
+            } catch (error) {
+                console.error("Error al cargar tareas de localStorage:", error);
+                window.tasks = []; // Fallback a array vacío
+            }
+        }
+
+        /**
+         * Guarda las tareas en localStorage y re-renderiza la lista.
+         */
+        function saveTasksToLocalStorage() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(window.tasks));
+                // Después de guardar, re-renderizar la lista para reflejar los cambios (ej. orden)
+                renderTasks();
+            } catch (error) {
+                console.error("Error al guardar tareas en localStorage:", error);
+            }
+        }
+        
+        // --- FUNCIONES CRUD ---
+
+        /**
+         * Renderiza la lista de tareas en el DOM.
+         * Usa window.tasks (global) como fuente de datos.
+         */
+        function renderTasks() { 
+            const tasks = window.tasks;
+
+            const earlyTasksContainer = document.getElementById('early-month-tasks');
+            const midTasksContainer = document.getElementById('mid-month-tasks');
+
+            // Limpiar contenedores
+            earlyTasksContainer.innerHTML = '';
+            midTasksContainer.innerHTML = '';
+
+            // Ordenar: Sin completar primero, luego por fecha de creación (timestamp)
+            tasks.sort((a, b) => {
+                if (a.isCompleted !== b.isCompleted) {
+                    return a.isCompleted ? 1 : -1; // Sin completar primero (false antes de true)
+                }
+                return a.createdAt - b.createdAt;
+            });
+
+            const earlyTasks = tasks.filter(t => t.category === 'early');
+            const midTasks = tasks.filter(t => t.category === 'mid');
+            
+            const createTaskElement = (task) => {
+                const div = document.createElement('div');
+                div.className = 'ios-item flex items-center justify-between py-3 px-1';
+                div.innerHTML = `
+                    <label class="flex items-center space-x-3 flex-grow cursor-pointer">
+                        <input type="checkbox" id="check-${task.id}" ${task.isCompleted ? 'checked' : ''} 
+                                onchange="toggleTask('${task.id}', event.target.checked)"
+                                class="checkbox h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <span class="task-text text-base ${task.isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'} flex-grow">${task.text}</span>
+                    </label>
+                    <button onclick="deleteTask('${task.id}')" title="Eliminar Tarea"
+                            class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-gray-100 transition-colors ml-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                `;
+                return div;
+            };
+
+            earlyTasks.forEach(task => earlyTasksContainer.appendChild(createTaskElement(task)));
+            midTasks.forEach(task => midTasksContainer.appendChild(createTaskElement(task)));
+        }
+
+        /**
+         * Añade una nueva tarea a localStorage.
+         * @param {string} category - 'early' o 'mid'.
+         * @param {string} text - Descripción de la tarea.
+         */
+        window.addTask = function(category, text) { 
+            if (!text.trim()) return;
+
+            const newTask = {
+                id: Date.now().toString(), // Usar timestamp como ID único
+                text: text.trim(),
+                category: category,
+                isCompleted: false,
+                createdAt: Date.now() // Timestamp para ordenar
+            };
+            
+            window.tasks.push(newTask);
+            saveTasksToLocalStorage();
+            console.log("Tarea añadida localmente con ID:", newTask.id);
+        }
+
+        /**
+         * Alterna el estado de completado de una tarea.
+         * @param {string} id - ID de la tarea.
+         * @param {boolean} isCompleted - Nuevo estado.
+         */
+        window.toggleTask = function(id, isCompleted) {
+            const taskIndex = window.tasks.findIndex(t => t.id === id);
+            if (taskIndex === -1) return;
+
+            window.tasks[taskIndex].isCompleted = isCompleted;
+            saveTasksToLocalStorage();
+        }
+
+        /**
+         * Elimina una tarea de localStorage.
+         * @param {string} id - ID de la tarea.
+         */
+        window.deleteTask = function(id) { 
+            // Modal de confirmación simple (reemplaza alert/confirm)
+            if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+                const initialLength = window.tasks.length;
+                // Filtrar la tarea a eliminar
+                window.tasks = window.tasks.filter(t => t.id !== id);
+                
+                if (window.tasks.length < initialLength) {
+                    saveTasksToLocalStorage();
+                    console.log(`Tarea con ID ${id} eliminada localmente.`);
                 } else {
-                    endWrapper.style.display = 'none';
+                    console.warn(`Tarea con ID ${id} no encontrada.`);
                 }
             }
         }
 
-        function setRating(n) {
-            tempRating = n;
-            const stars = document.querySelectorAll('#add-rating-container .star');
-            stars.forEach((s, index) => {
-                s.classList.toggle('selected', index < n);
-            });
-        }
-
-        // --- LÓGICA DE NEGOCIO ---
-
-        function addBook() {
-            const title = document.getElementById('add-title').value;
-            const author = document.getElementById('add-author').value;
-            const status = document.getElementById('add-status').value;
-            const start = document.getElementById('add-start').value;
-            const end = document.getElementById('add-end').value;
-
-            if(!title) return alert("Ingresa un título");
-
-            const newBook = {
-                id: Date.now(),
-                title,
-                author,
-                status,
-                startDate: (status !== 'want') ? (start || new Date().toISOString().split('T')[0]) : null,
-                endDate: (status === 'read') ? (end || new Date().toISOString().split('T')[0]) : null,
-                rating: (status === 'read') ? tempRating : 0,
-                progress: 0
-            };
-
-            books.push(newBook);
-            saveData();
+        /**
+         * Limpia el estado de 'completado' de todas las tareas.
+         */
+        window.clearAllChecks = function() { 
+            // Usar map para crear un nuevo array con isCompleted en false
+            window.tasks = window.tasks.map(task => ({
+                ...task,
+                isCompleted: false
+            }));
             
-            // Reset form
-            document.getElementById('add-title').value = '';
-            document.getElementById('add-author').value = '';
-            tempRating = 0;
-            setRating(0);
-            alert("Libro guardado");
+            saveTasksToLocalStorage();
+            console.log("Todos los checks han sido limpiados.");
+        }
+        
+        // --- LÓGICA DEL MODAL ---
+
+        window.showAddTaskModal = function(category) {
+            window.currentCategory = category;
+            document.getElementById('new-task-input').value = '';
+            document.getElementById('add-task-modal').classList.remove('hidden');
+            document.getElementById('add-task-modal').classList.add('flex');
+            document.getElementById('new-task-input').focus();
         }
 
-        function saveData() {
-            localStorage.setItem('myBooks', JSON.stringify(books));
-            localStorage.setItem('readingChallenge', challengeGoal);
-        }
-
-        // --- RENDERIZADO: LEYENDO ---
-        function renderReading() {
-            const container = document.getElementById('reading-list');
-            container.innerHTML = '';
-            const readingBooks = books.filter(b => b.status === 'reading');
-
-            if(readingBooks.length === 0) container.innerHTML = '<p style="text-align:center;color:var(--text-sec);margin-top:50px;">No estás leyendo nada actualmente.</p>';
-
-            readingBooks.forEach(book => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `
-                    <h3>${book.title}</h3>
-                    <p style="color:var(--text-sec); margin-bottom:15px;">${book.author}</p>
-                    <label style="font-size:12px;">Progreso: <span id="val-${book.id}">${book.progress}</span>%</label>
-                    <input type="range" min="0" max="100" value="${book.progress}" oninput="updateProgress(${book.id}, this.value)" style="width:100%; margin: 10px 0;">
-                    <button class="btn success" onclick="finishBook(${book.id})">Terminar Libro</button>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function updateProgress(id, val) {
-            const book = books.find(b => b.id === id);
-            if(book) {
-                book.progress = val;
-                document.getElementById(`val-${id}`).innerText = val;
-                saveData();
+        window.saveNewTask = function() {
+            const text = document.getElementById('new-task-input').value;
+            if (text.trim() && window.currentCategory) {
+                window.addTask(window.currentCategory, text);
+                document.getElementById('add-task-modal').classList.add('hidden');
+                document.getElementById('add-task-modal').classList.remove('flex');
+            } else if (!text.trim()) {
+                console.log("Error de input: Por favor, introduce una descripción para la tarea.");
             }
         }
+        
+        // --- INICIALIZACIÓN FINAL ---
+        // Carga las tareas al iniciar la aplicación
+        loadTasksFromLocalStorage();
 
-        function finishBook(id) {
-            const rating = prompt("Califica del 1 al 5:", "5");
-            if(rating !== null) {
-                const book = books.find(b => b.id === id);
-                book.status = 'read';
-                book.endDate = new Date().toISOString().split('T')[0];
-                book.rating = parseInt(rating);
-                book.progress = 100;
-                saveData();
-                renderReading();
+        // Opcional: Permitir guardar con Enter
+        document.getElementById('new-task-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                document.getElementById('save-task-btn').click();
             }
-        }
+        });
 
-        // --- RENDERIZADO: QUIERO LEER ---
-        function renderWant() {
-            const container = document.getElementById('want-list');
-            container.innerHTML = '';
-            const wantBooks = books.filter(b => b.status === 'want');
-
-            if(wantBooks.length === 0) container.innerHTML = '<p style="text-align:center;color:var(--text-sec);margin-top:50px;">Tu lista está vacía.</p>';
-
-            wantBooks.forEach(book => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.style.display = 'flex';
-                div.style.justifyContent = 'space-between';
-                div.style.alignItems = 'center';
-                div.innerHTML = `
-                    <div>
-                        <h3 style="font-size:18px;">${book.title}</h3>
-                        <p style="color:var(--text-sec); font-size:14px;">${book.author}</p>
-                    </div>
-                    <button class="btn small" onclick="startReading(${book.id})">Leer</button>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function startReading(id) {
-            const book = books.find(b => b.id === id);
-            book.status = 'reading';
-            book.startDate = new Date().toISOString().split('T')[0];
-            saveData();
-            renderWant();
-        }
-
-        // --- RENDERIZADO: ESTADÍSTICAS ---
-        function renderStats() {
-            const container = document.getElementById('stats-content');
-            container.innerHTML = '';
-            
-            // Agrupar por año
-            const booksRead = books.filter(b => b.status === 'read' && b.endDate);
-            const years = {};
-
-            booksRead.forEach(b => {
-                const y = b.endDate.split('-')[0];
-                if(!years[y]) years[y] = { count: 0, sumRating: 0 };
-                years[y].count++;
-                years[y].sumRating += b.rating;
-            });
-
-            const sortedYears = Object.keys(years).sort().reverse();
-
-            if(sortedYears.length === 0) container.innerHTML = '<p style="text-align:center;color:var(--text-sec);">Aún no hay libros leídos.</p>';
-
-            sortedYears.forEach(year => {
-                const data = years[year];
-                const avg = (data.sumRating / data.count).toFixed(1);
-                
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <h2>${year}</h2>
-                        <span style="font-size:20px; font-weight:bold; color:var(--primary);">${avg} ★</span>
-                    </div>
-                    <p style="color:var(--text-sec);">${data.count} libros leídos</p>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // --- RENDERIZADO: DESAFÍO ---
-        function renderChallenge() {
-            const currentYear = new Date().getFullYear().toString();
-            const readThisYear = books.filter(b => b.status === 'read' && b.endDate && b.endDate.startsWith(currentYear)).length;
-            
-            let percent = Math.round((readThisYear / challengeGoal) * 100);
-            
-            document.getElementById('challenge-read').innerText = readThisYear;
-            document.getElementById('challenge-target').innerText = challengeGoal;
-            document.getElementById('challenge-percent').innerText = percent + "%";
-            document.getElementById('challenge-bar').style.width = Math.min(percent, 100) + "%"; // La barra visual se llena hasta 100%
-            
-            if(percent > 100) {
-                 document.getElementById('challenge-bar').style.backgroundColor = '#FFD60A'; // Oro si pasas la meta
-            } else {
-                 document.getElementById('challenge-bar').style.backgroundColor = 'var(--primary)';
-            }
-        }
-
-        function setChallengeGoal() {
-            const goal = prompt("¿Cuántos libros quieres leer este año?", challengeGoal);
-            if(goal) {
-                challengeGoal = parseInt(goal);
-                saveData();
-                renderChallenge();
-            }
-        }
-
-        // Inicializar vista por defecto (Stats o Add)
-        // No es necesario llamar nada, el HTML tiene "active" en la primera vista.
     </script>
 </body>
 </html>
